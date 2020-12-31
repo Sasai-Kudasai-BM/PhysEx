@@ -1,0 +1,37 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.skds.physex.mixins",
+  "target": "@env(DEFAULT)",  
+  "refmap": "mixins.physex.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "other.PalettedContainerMixin",
+    "other.ServerChunkProviderMixin",
+    "other.BoatEntityMixin",
+
+
+    "fluids.WaterFluidMixin",
+    "fluids.FlowingFluidMixin",
+    "fluids.FlowingFluidBlockMixin",
+
+
+    "block.FenceGateBlockMixin",
+    "block.DoorBlockMixin",
+    "block.LeavesBlockMixin",
+    "block.BaseWLMixin",
+    "block.BlockStateMixin",
+    "block.BlockMixin",
+
+    "item.GlassBottleItemMixin"
+
+  ],
+  "client": [
+    "fluids.FluidBlockRendererMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

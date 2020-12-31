@@ -1,0 +1,158 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { 
+            name = 'forge'
+            url = 'https://files.minecraftforge.net/maven' 
+        }
+        maven {
+           name = 'sponge'
+           url = 'https://repo.spongepowered.org/maven'
+        }
+        maven {
+           name = 'a'
+           url = 'https://dist.creeper.host/Sponge/maven'
+        }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
+// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+//apply plugin: 'eclipse'
+//apply plugin: 'maven-publish'
+
+version = '0.0.1-A'
+group = 'net.skds.physex.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'physex'
+
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+minecraft {
+    // The mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   Snapshot are built nightly.
+    // stable_#            Stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not always work.
+    // Simply re-run your setup task after changing the mappings to update your workspace.
+
+    /*
+    def officialVersion = System.getenv("OFFICIAL_MAPPINGS")
+    if (officialVersion == null) {
+        mappings channel: 'snapshot', version: 'complete-20200912-1.16.3-v5'
+    } else {
+        mappings channel: 'official', version: minecraft_version
+    }
+    */
+
+    //mappings channel: 'snapshot', version: '20200514-1.16.3'
+    mappings channel: 'snapshot', version: '20200514-1.16.3'
+    //mappings channel: 'snapshot', version: '20200912-1.16.3'
+
+
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', ''
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                physex {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', ''
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                physex {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', ''
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'physex', '--all', '--output', file('src/generated/resources/')
+
+            mods {
+                physex {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+configurations {
+    embed
+    compile.extendsFrom(embed)
+}
+
+dependencies {
+    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
+    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
+    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
+    minecraft 'net.minecraftforge:forge:1.16.3-34.1.33'
+    //compile 'org.spongepowered:mixin:0.8'
+    embed('org.spongepowered:mixin:0.7.11') { transitive = false }
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //minecraft fg.deobf('net.minecraftforge:forge:1.16.3-34.1.33')
+}
+
+// Example for how to get properties into the manifest for reading by the runtime..
+jar {
+    manifest {
+        attributes([
+            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            "MixinConfigs": "mixins.physex.json", // Файлы наших миксинов
+            "Specification-Title": "physex",
+            "Specification-Vendor": "examplemodsareus",
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" :"examplemodsareus",
+            //"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+}
+
+//configurations { 
+//    compile
+//}
+
+jar.finalizedBy('reobfJar') 
+
+
+mixin {
+    add sourceSets.main, 'mixins.physex.refmap.json'
+}
