@@ -62,6 +62,7 @@ import net.skds.physex.registry.BlockStateProps;
 import net.skds.physex.util.ExtendedFHIS;
 import net.skds.physex.util.Interface.IBaseWL;
 import net.skds.physex.util.Interface.IBlockExtended;
+import net.skds.physex.util.blockupdate.WWSGlobal;
 import net.skds.physex.util.pars.FluidPars;
 
 public class FFluidStatic {
@@ -507,6 +508,7 @@ public class FFluidStatic {
 				posos = true;
 			}
 		}
+		Direction dir = dirFromVec(pos1, pos2);
 		if (fp2 != null) {
 			if (fp2.isPassable == 1) {
 				// System.out.println(state2);
@@ -514,8 +516,7 @@ public class FFluidStatic {
 			} else if (fp2.isPassable == -1) {
 				return false;
 			}
-			if ((state2.getFluidState().isEmpty()
-					|| state1.getFluidState().canDisplace(w, pos1, f2, dirFromVec(pos1, pos2)))
+			if ((state2.getFluidState().isEmpty() || state1.getFluidState().canDisplace(w, pos1, f2, dir))
 					&& fp2.isDestroyableBy(fluid))
 				return true;
 		}
@@ -532,8 +533,7 @@ public class FFluidStatic {
 		if ((voxelShape1.isEmpty() || posos) && voxelShape2.isEmpty()) {
 			return true;
 		}
-		return !VoxelShapes.doAdjacentCubeSidesFillSquare(voxelShape1, voxelShape2,
-				FFluidStatic.dirFromVec(pos1, pos2));
+		return !VoxelShapes.doAdjacentCubeSidesFillSquare(voxelShape1, voxelShape2, dir);
 	}
 
 	public static boolean canOnlyFullCube(BlockState bs) {
@@ -564,7 +564,9 @@ public class FFluidStatic {
 			// System.out.println("l;hhhhhhh " + bh);
 		}
 		Fluid f = bh.getFluidInTank(0).getFluid();
-
+		if (!(f instanceof FlowingFluid)) {
+			return;
+		}
 		PlayerEntity p = e.getPlayer();
 		World w = e.getWorld();
 		RayTraceResult targ0 = e.getTarget();
@@ -634,7 +636,7 @@ public class FFluidStatic {
 		boolean frst = true;
 		boolean client = false;
 		World w = actioner.getWorld();
-		WorldWorkSet wws = FluidTasksManager.FWS.get(w);
+		WWSGlobal wws = WWSGlobal.get(w);
 		Set<BlockPos> setBan = new HashSet<>();
 		Set<BlockPos> setAll = new HashSet<>();
 		client = wws == null;
@@ -814,7 +816,7 @@ public class FFluidStatic {
 						: SoundEvents.ITEM_BUCKET_FILL;
 			p.playSound(soundevent, 1.0F, 1.0F);
 			if (!p.abilities.isCreativeMode) {
-				//bucket.fill(new FluidStack(fluid, 1000), FluidAction.EXECUTE);
+				// bucket.fill(new FluidStack(fluid, 1000), FluidAction.EXECUTE);
 				event.setFilledBucket(new ItemStack(fluid.getFilledBucket()));
 			}
 		}

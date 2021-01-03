@@ -4,6 +4,5 @@ import net.skds.physex.util.pars.CustomBlockPars;
 
 public interface IBlockExtended {
 	public CustomBlockPars getCustomBlockPars();
-	public void setCustomBlockPars(CustomBlockPars pars);
-	
+	public void setCustomBlockPars(CustomBlockPars pars);	
 }

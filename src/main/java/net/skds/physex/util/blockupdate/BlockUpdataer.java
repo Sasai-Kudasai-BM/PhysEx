@@ -5,12 +5,16 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.server.ServerWorld;
 import net.skds.physex.Events;
+import net.skds.physex.PhysEXConfig;
 import net.skds.physex.fluidphysics.FluidTasksManager;
 
 public class BlockUpdataer {
+
+    private static final ConcurrentLinkedQueue<Entity> entitiesToAdd = new ConcurrentLinkedQueue<>();
 
     private static float upus = 0.1F;
     private static int avgTime = 0;
@@ -19,6 +23,7 @@ public class BlockUpdataer {
     private static int[] timeTickList = new int[14];
     private static int indexT2 = 0;
 
+    private static float RemMRUC = 0;
     private static int MRUC = 0;
     private static int updateCounter = 0;
     private static int indexUp = 0;
@@ -33,6 +38,14 @@ public class BlockUpdataer {
 
     public static int getAvgTime() {
         return avgTime;
+    }
+
+    public static boolean applyTask(float weight) {
+        boolean bl = RemMRUC > 0F;
+        if (bl) {
+            RemMRUC -= weight;
+        }
+        return bl;
     }
 
     public static int getMaxRecomendedUpdateCount() {
@@ -96,7 +109,9 @@ public class BlockUpdataer {
     private static void calcMRUC() {
         int RT = 50_000 - avgTickTime;
         int RTavgF = RT;
-        MRUC = (int) ((float) RTavgF * upus);
+        int PreMRUC = (int) ((float) RTavgF * upus);
+        MRUC = Math.max(PhysEXConfig.COMMON.minBlockUpdates.get(), PreMRUC);
+        RemMRUC = MRUC;
         // System.out.println(avgTickTime);
     }
 
@@ -111,6 +126,13 @@ public class BlockUpdataer {
 
     public static void onWorldUnload(ServerWorld w) {
         BLOCK_UPDATES_WORLDS.remove(w);
+        entitiesToAdd.forEach((e) -> {
+            if (e.world == w) {
+
+                e.world.addEntity(e);
+                entitiesToAdd.remove(e);
+            }
+        });
     }
 
     public static void addUpdate(ServerWorld w, BlockPos pos, BlockState newState, BlockState oldState, int flags) {
@@ -134,15 +156,21 @@ public class BlockUpdataer {
 
     public static void tick(boolean in) {
         long initT = System.nanoTime();
+        Entity e;
 
-        if (in)
-        BLOCK_UPDATES_WORLDS.forEach((w, set) -> {
-            while (!set.isEmpty()) {
-                UpdateTask task = set.poll();
-                task.update(w);
-                ++updateCounter;
+        if (in) {
+
+            while ((e = entitiesToAdd.poll()) != null) {
+                e.world.addEntity(e);
             }
-        });
+            BLOCK_UPDATES_WORLDS.forEach((w, set) -> {
+                while (!set.isEmpty()) {
+                    UpdateTask task = set.poll();
+                    task.update(w);
+                    ++updateCounter;
+                }
+            });
+        }
 
         int time = (int) (System.nanoTime() - initT) / 1000;
         if (in) {
@@ -152,7 +180,11 @@ public class BlockUpdataer {
             calcUPus((int) (time + inint + FluidTasksManager.getLastTimeMicros()));
             calcMRUC();
             updateCounter = 0;
-            //System.out.println(MRUC);
+            // System.out.println(MRUC);
         }
+    }
+
+    public static void addEntity(Entity e) {
+        entitiesToAdd.add(e);
     }
 }

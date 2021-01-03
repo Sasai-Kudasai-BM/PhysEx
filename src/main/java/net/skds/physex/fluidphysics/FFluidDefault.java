@@ -195,6 +195,9 @@ public class FFluidDefault extends FFluidBasic {
 		}
 		FluidState fs2 = state2.getFluidState();
 		int level2 = fs2.getLevel();
+		if (!fluid.isEquivalentTo(fs2.getFluid())) {
+			level2 = 0;
+		}
 
 		dcFlag = level > 1;
 
@@ -223,6 +226,9 @@ public class FFluidDefault extends FFluidBasic {
 		}
 		FluidState fs2 = state2.getFluidState();
 		int level2 = fs2.getLevel();
+		if (!fluid.isEquivalentTo(fs2.getFluid())) {
+			level2 = 0;
+		}
 
 		if (level > level2 + 1) {
 			int delta = (level - level2) / 2;
@@ -272,7 +278,7 @@ public class FFluidDefault extends FFluidBasic {
 		// return false;
 
 		int level2 = fs2.getLevel();
-		if (level2 >= MAX_FLUID_LEVEL && !ignoreLevels) {
+		if (level2 >= MAX_FLUID_LEVEL && !ignoreLevels && fluid.isEquivalentTo(fs2.getFluid())) {
 			return false;
 		}
 
@@ -290,7 +296,7 @@ public class FFluidDefault extends FFluidBasic {
 			} else {
 				return (level2 + 2 < level);
 			}
-		} else if (!down && level2 + 1 >= level) {
+		} else if (!down && level2 + 1 >= level ) {
 			return false;
 		}
 

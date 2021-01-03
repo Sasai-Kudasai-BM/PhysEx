@@ -14,8 +14,9 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.skds.physex.client.ClientEvents;
-import net.skds.physex.fluidphysics.FluidTasksManager;
+import net.skds.physex.registry.Entities;
 import net.skds.physex.registry.Items;
+import net.skds.physex.registry.RenderRegistry;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("physex")
@@ -36,27 +37,26 @@ public class PhysEX
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
         // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(CLIENT_EVENTS);
         MinecraftForge.EVENT_BUS.register(EVENTS);
         MinecraftForge.EVENT_BUS.register(this);
 
-        FluidTasksManager.init();
-
         PhysEXConfig.init();
-
         
         Items.register();
+        Entities.register();
     }
     
 
     private void setup(final FMLCommonSetupEvent event) {  
-        
         //CapabilityManager.INSTANCE.register(ChunkData.class, new ChunkDataStorage(), () -> {
 		//	return new ChunkData();
         //});
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
+        MinecraftForge.EVENT_BUS.register(CLIENT_EVENTS);
+        RenderRegistry.register();
+        
         // do something that can only be done on the client
         //LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
     }

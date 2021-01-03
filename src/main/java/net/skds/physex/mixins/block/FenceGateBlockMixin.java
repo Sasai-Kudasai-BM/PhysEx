@@ -28,7 +28,10 @@ public abstract class FenceGateBlockMixin extends Block implements IBaseWL, IWat
 	}
 
 	protected void addCustomState(Builder<Block, BlockState> builder) {
-		builder.add(BlockStateProperties.WATERLOGGED);
+		try {
+			builder.add(BlockStateProperties.WATERLOGGED);			
+		} catch (Exception e) {
+		}
 		builder.add(BlockStateProps.FFLUID_LEVEL);
 	}	
 }

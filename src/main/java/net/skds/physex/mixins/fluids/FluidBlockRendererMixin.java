@@ -30,7 +30,7 @@ public class FluidBlockRendererMixin {
 
     @Redirect(method = "render(Lnet/minecraft/world/IBlockDisplayReader;Lnet/minecraft/util/math/BlockPos;Lcom/mojang/blaze3d/vertex/IVertexBuilder;Lnet/minecraft/fluid/FluidState;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/FluidBlockRenderer;getFluidHeight(Lnet/minecraft/world/IBlockReader;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/fluid/Fluid;)F", ordinal = 0))
     public float gc(FluidBlockRenderer fr, IBlockReader w, BlockPos p, Fluid f) {
-        customFF = PhysEXConfig.COMMON.finiteFluids.get();
+        customFF = PhysEXConfig.COMMON.fluidRender.get();
         if (customFF) {
             float[] flex = FFluidStatic.getConH(w, p, f);
             customAH.put(p.toLong(), flex);

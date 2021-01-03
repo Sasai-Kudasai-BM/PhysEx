@@ -28,7 +28,11 @@ public abstract class DoorBlockMixin extends Block implements IBaseWL, IWaterLog
 	}
 
 	protected void addCustomState(Builder<Block, BlockState> builder) {
-		builder.add(BlockStateProperties.WATERLOGGED);
+
+		try {
+			builder.add(BlockStateProperties.WATERLOGGED);			
+		} catch (Exception e) {
+		}
 		builder.add(BlockStateProps.FFLUID_LEVEL);
-	}	
+	}
 }

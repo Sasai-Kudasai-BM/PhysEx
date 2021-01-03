@@ -12,8 +12,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.skds.physex.fluidphysics.FFluidStatic;
-import net.skds.physex.fluidphysics.FluidTasksManager;
 import net.skds.physex.util.blockupdate.BlockUpdataer;
+import net.skds.physex.util.blockupdate.WWSGlobal;
 import net.skds.physex.util.pars.ParsApplier;
 
 public class Events {
@@ -33,7 +33,9 @@ public class Events {
 
     @SubscribeEvent
     public void onBucketEvent(FillBucketEvent e) {
-        FFluidStatic.onBucketEvent(e);
+        if (PhysEXConfig.COMMON.finiteFluids.get()) {
+            FFluidStatic.onBucketEvent(e);
+        }
     }
 
     @SubscribeEvent
@@ -45,22 +47,18 @@ public class Events {
     public void onWorldUnload(WorldEvent.Unload e) {
 
         if (!e.getWorld().isRemote()) {
-            FluidTasksManager.unloadWorld(e.getWorld());
-
-            // BlockUpdataer.W_UPD.remove(e.getWorld());
+            ServerWorld w = (ServerWorld) e.getWorld();
+            WWSGlobal.unloadWorld(w);
             BlockUpdataer.onWorldUnload((ServerWorld) e.getWorld());
-            // BlockUpdataer.clear();
         }
     }
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load e) {
 
-        // BlockUpdataer.W_UPD.remove(e.getWorld());
-        // BlockUpdataer.clear();
         if (!e.getWorld().isRemote()) {
-            // BlockUpdataer.onWorldLoad((ServerWorld) e.getWorld());
-            FluidTasksManager.loadWorld(e.getWorld());
+            ServerWorld w = (ServerWorld) e.getWorld();            
+            WWSGlobal.loadWorld(w);
             BlockUpdataer.onWorldLoad((ServerWorld) e.getWorld());
         }
     }
@@ -81,11 +79,12 @@ public class Events {
         boolean in = event.phase == Phase.START;
         if (in) {
             inTickTime = System.nanoTime();
-            FluidTasksManager.tickIn();
+            WWSGlobal.tickInG();
         }
         BlockUpdataer.tick(in);
         if (!in) {
-            FluidTasksManager.tickOut();
+            WWSGlobal.tickOutG();
+            
             lastTickTime = (int) (System.nanoTime() - inTickTime);
         }
     }

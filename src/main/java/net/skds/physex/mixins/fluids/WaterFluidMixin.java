@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.skds.physex.PhysEXConfig;
 
 @Mixin(value = { WaterFluid.class })
 public class WaterFluidMixin {
@@ -22,11 +23,23 @@ public class WaterFluidMixin {
 	@OnlyIn(Dist.CLIENT)
 	@Overwrite
 	public void animateTick(World worldIn, BlockPos pos, FluidState state, Random random) {
-		if (!state.isSource() && !state.get(BlockStateProperties.FALLING) && state.getFlow(worldIn, pos).lengthSquared() > 0.5D) {
-			if (random.nextInt(16) == 0) {
-				worldIn.playSound((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D, (double) pos.getZ() + 0.5D,
-						SoundEvents.BLOCK_WATER_AMBIENT, SoundCategory.BLOCKS, random.nextFloat() * 0.25F + 0.75F,
-						random.nextFloat() + 0.5F, false);
+		if (!state.isSource() && !state.get(BlockStateProperties.FALLING)) {
+
+			if (PhysEXConfig.COMMON.finiteFluids.get()) {
+
+				if (random.nextInt(16) == 0 && state.getFlow(worldIn, pos).lengthSquared() > 0.5D) {
+					worldIn.playSound((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D,
+							(double) pos.getZ() + 0.5D, SoundEvents.BLOCK_WATER_AMBIENT, SoundCategory.BLOCKS,
+							random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
+				}
+			} else {
+				if (!state.isSource() && !state.get(BlockStateProperties.FALLING)) {
+					if (random.nextInt(64) == 0) {
+						worldIn.playSound((double) pos.getX() + 0.5D, (double) pos.getY() + 0.5D,
+								(double) pos.getZ() + 0.5D, SoundEvents.BLOCK_WATER_AMBIENT, SoundCategory.BLOCKS,
+								random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false);
+					}
+				}
 			}
 		} else if (random.nextInt(10) == 0 && state.isSource()) {
 			worldIn.addParticle(ParticleTypes.UNDERWATER, (double) pos.getX() + random.nextDouble(),

@@ -15,6 +15,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.skds.physex.PhysEXConfig;
 import net.skds.physex.fluidphysics.FFluidStatic;
 import net.skds.physex.fluidphysics.FluidTasksManager;
@@ -34,7 +35,7 @@ public class FlowingFluidMixin implements IFlowingFluid {
     public void tick(World worldIn, BlockPos pos, FluidState fs, CallbackInfo ci) {
         if (PhysEXConfig.COMMON.finiteFluids.get()) {
             if (!worldIn.isRemote) {
-                FluidTasksManager.addFluidTask(worldIn, pos, fs.getBlockState());
+                FluidTasksManager.addFluidTask((ServerWorld) worldIn, pos, fs.getBlockState());
             }
             ci.cancel();
         }
