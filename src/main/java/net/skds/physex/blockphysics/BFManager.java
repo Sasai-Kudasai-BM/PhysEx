@@ -17,8 +17,8 @@ public class BFManager {
 		if (material == Material.AIR || material.isLiquid() || block == Blocks.BEDROCK || !state.getFluidState().isEmpty()) {
 			return;
 		}
-		//WWS wws = WWSGlobal.get(w).blocks;
-		//wws.addTask(pos, type);
+		WWS wws = WWSGlobal.get(w).blocks;
+		wws.addTask(pos, type);
 	}
 
 	public static void addRandomTask(ServerWorld w, BlockPos pos, BlockState state) {
@@ -30,7 +30,7 @@ public class BFManager {
 		addTask(w, pos, state, Type.UPDATE);
 	}
 
-	public static void addNeighborTask(ServerWorld w, BlockPos pos, BlockState state) {		
+	public static void addNeighborTask(ServerWorld w, BlockPos pos, BlockState state) {
 		addTask(w, pos, state, Type.NEIGHBOR);
 		//w.getPendingBlockTicks().scheduleTick(pos, state.getBlock(), 2);
 	}

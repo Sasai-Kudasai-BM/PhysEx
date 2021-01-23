@@ -1,12 +1,13 @@
 package net.skds.physex;
 
+import java.io.File;
+
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig.Type;
 import net.skds.physex.config.Main;
-import net.skds.physex.config.Waterlogged;
 
 public class PhysEXConfig {
 
@@ -22,7 +23,7 @@ public class PhysEXConfig {
         COMMON = cm.getLeft();
         SPEC = cm.getRight();
 
-        Pair<Waterlogged, ForgeConfigSpec> wl = new ForgeConfigSpec.Builder().configure(Waterlogged::new);
+        //Pair<Waterlogged, ForgeConfigSpec> wl = new ForgeConfigSpec.Builder().configure(Waterlogged::new);
         ///WATERLOGGED = wl.getLeft();
         //SPEC_WL = wl.getRight();
 
@@ -31,6 +32,8 @@ public class PhysEXConfig {
     }
 
     public static void init() {
+        File dir = new File(System.getProperty("user.dir") + "\\config\\physex");        
+		dir.mkdir();
         ModLoadingContext.get().registerConfig(Type.COMMON, SPEC, PhysEX.MOD_ID + "/main.toml");
         //ModLoadingContext.get().registerConfig(Type.COMMON, SPEC_WL, PhysEX.MOD_ID + "/waterlogged.toml");
     }

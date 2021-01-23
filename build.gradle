@@ -27,7 +27,7 @@ apply plugin: 'org.spongepowered.mixin'
 //apply plugin: 'eclipse'
 //apply plugin: 'maven-publish'
 
-version = '0.0.2-A'
+version = '0.0.3-A'
 group = 'net.skds.physex.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'physex'
 

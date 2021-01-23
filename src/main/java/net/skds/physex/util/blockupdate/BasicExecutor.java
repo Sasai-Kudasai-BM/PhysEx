@@ -5,7 +5,10 @@ import java.util.Set;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
@@ -13,7 +16,9 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.IChunk;
 import net.minecraft.world.server.ServerChunkProvider;
 import net.minecraft.world.server.ServerWorld;
-import net.skds.physex.mixins.other.ServerWorldAccessor;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.skds.physex.network.DebugPacket;
+import net.skds.physex.network.PacketHandler;
 import net.skds.physex.util.Interface.IServerChunkProvider;
 
 public abstract class BasicExecutor implements Runnable {
@@ -28,6 +33,10 @@ public abstract class BasicExecutor implements Runnable {
 	}
 
 	protected BlockState setState(BlockPos pos, BlockState newState) {
+		return setState(pos, newState, false);
+	}
+
+	protected BlockState setState(BlockPos pos, BlockState newState, boolean forceDrop) {
 		/*
 		 * Sets a block state into this world.Flags are as follows: 1 will cause a block
 		 * update. 2 will send the change to clients. 4 will prevent the block from
@@ -39,14 +48,14 @@ public abstract class BasicExecutor implements Runnable {
 		BlockState oldState = setFinBlockState(pos, newState);
 		if (oldState != null) {
 
-			if ((newState.getFluidState().isEmpty() ^ oldState.getFluidState().isEmpty())
+			if ((forceDrop || (newState.getFluidState().isEmpty() ^ oldState.getFluidState().isEmpty()))
 					&& (newState.getOpacity(w, pos) != oldState.getOpacity(w, pos)
 							|| newState.getLightValue(w, pos) != oldState.getLightValue(w, pos)
 							|| newState.isTransparent() || oldState.isTransparent())) {
 				w.getChunkProvider().getLightManager().checkBlock(pos);
 			}
 
-			BlockUpdataer.addUpdate(w, pos, newState, oldState, 3);
+			BlockUpdataer.addUpdate(w, pos, newState, oldState, 3, forceDrop);
 		}
 		return oldState;
 	}
@@ -101,27 +110,52 @@ public abstract class BasicExecutor implements Runnable {
 		return setted;
 	}
 
+	protected boolean isAir(BlockState statex) {
+		return statex.getMaterial() == Material.AIR;
+	}
+
 	// ============== ENTITY ================= //
+
+	protected TileEntity getTileEntity(BlockPos pos) {
+		IChunk ich = getChunk(pos);
+		TileEntity tileentity = null;
+
+		if (ich instanceof Chunk) {
+			tileentity = ((Chunk) getChunk(pos)).getTileEntity(pos, Chunk.CreateEntityType.IMMEDIATE);
+		}
+
+		//if (tileentity == null) {
+		//	tileentity = this.getPendingTileEntityAt(pos);
+		//}
+
+		return tileentity;
+	}
 
 	protected void addEntity(Entity e) {
 		BlockUpdataer.addEntity(e);
 		/*
-		if (((ServerWorldAccessor) w).hasDuplicateEntityInv(entityIn)) {
-			return false;
-		} //else {
-		// if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new
-		// net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, this))) return
-		// false;
-		IChunk ichunk = this.getChunk((int) Math.floor(entityIn.getPosX()), (int) Math.floor(entityIn.getPosZ()));
+		 * if (((ServerWorldAccessor) w).hasDuplicateEntityInv(entityIn)) { return
+		 * false; } //else { // if
+		 * (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new //
+		 * net.minecraftforge.event.entity.EntityJoinWorldEvent(entityIn, this))) return
+		 * // false; IChunk ichunk = this.getChunk((int) Math.floor(entityIn.getPosX()),
+		 * (int) Math.floor(entityIn.getPosZ()));
+		 * 
+		 * if (!(ichunk instanceof Chunk)) { return false; } else {
+		 * ichunk.addEntity(entityIn); ((ServerWorldAccessor)
+		 * w).onEntityAddedInv(entityIn); return true; } // }
+		 */
+	}
 
-		if (!(ichunk instanceof Chunk)) {
-			return false;
-		} else {
-			ichunk.addEntity(entityIn);
-			((ServerWorldAccessor) w).onEntityAddedInv(entityIn);
-			return true;
-		}
-		// }
-		*/
+	// ==============================
+	public static Direction dirFromVec(BlockPos pos1, BlockPos pos2) {
+		return Direction.getFacingFromVector(pos2.getX() - pos1.getX(), pos2.getY() - pos1.getY(),
+				pos2.getZ() - pos1.getZ());
+	}
+
+	protected void debug(BlockPos pos) {		
+		w.getPlayers().forEach((p) -> {
+			PacketHandler.send(PacketDistributor.PLAYER.with(() -> p), new DebugPacket(pos));
+		});
 	}
 }

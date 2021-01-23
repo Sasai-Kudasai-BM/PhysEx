@@ -15,12 +15,28 @@ public class BFTask {
 	public Type getType() {
 		return type;
 	}
-	
+
 	public BlockPos getPos() {
 		return pos;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		} else if (!(obj instanceof BFTask)) {
+			return false;
+		} else {
+			BFTask task = (BFTask) obj;
+			if (this.type != task.type) {
+				return false;
+			} else {
+				return this.pos.equals(task.pos);
+			}
+		}
+	}
+
 	public static enum Type {
-		UPDATE, RANDOM, NEIGHBOR, WEAK;
-	}	
+		UPDATE, RANDOM, NEIGHBOR, DOWNRAY, UPRAY;
+	}
 }

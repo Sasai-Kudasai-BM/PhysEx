@@ -6,11 +6,12 @@ import java.util.concurrent.locks.LockSupport;
 
 import io.netty.util.internal.ConcurrentSet;
 import net.minecraft.util.Tuple;
+import net.skds.physex.PhysEX;
 import net.skds.physex.util.blockupdate.BlockUpdataer;
 
 public class BFWorker extends Thread {
 
-	private final WWS owner;
+	public final WWS owner;
 	private boolean work = true;
 
 	private final Comparator<Tuple<BFTask, Integer>> comp = new Comparator<Tuple<BFTask, Integer>>() {
@@ -36,7 +37,11 @@ public class BFWorker extends Thread {
 	public synchronized void run() {
 		while (work) {
 			LockSupport.park();
-			rv();
+			try {
+				rv();				
+			} catch (Exception e) {
+				PhysEX.LOGGER.warn("Exeption while running blockphysics task ", e);
+			}
 		}
 	}
 
@@ -50,22 +55,23 @@ public class BFWorker extends Thread {
 			ct.add(tup);
 		}
 		ct.sort(comp);
-		//if (ct.size() > 0) {
+		// if (ct.size() > 0) {
 
-			//System.out.println(ct.size());
-		//}
-
+		// System.out.println(ct.size());
+		// }
+		boolean b = true;
 		for (Tuple<BFTask, Integer> tup : ct) {
 			final BFTask task = tup.getA();
 			taskList.remove(tup.getA());
-			if (BlockUpdataer.applyTask(0.5F)) {
-				Runnable ex = new BFExecutor(owner.getWorld(), task.getPos(), this);
-				ex.run();
+			if (b) {
+				BFExecutor ex = new BFExecutor(owner.getWorld(), task.getPos(), this, task.getType());
+				if (ex.runS()) {
+					b = BlockUpdataer.applyTask(2.5F);
+				}
 				ex = null;
-
 			} else {
+				owner.goNT(task);
 			}
 		}
-
 	}
 }

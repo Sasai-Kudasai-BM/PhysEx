@@ -32,7 +32,7 @@ public class AdvancedFallingBlockRenderer extends EntityRenderer<AdvancedFalling
 	public boolean shouldRender(AdvancedFallingBlockEntity livingEntityIn, ClippingHelper camera, double camX,
 			double camY, double camZ) {
 		double d0 = this.renderManager.squareDistanceTo(livingEntityIn);
-		final int d = 32;
+		final int d = 64;
 		if (d0 > d * d) {
 			return false;
 		}

@@ -2,6 +2,8 @@ package net.skds.physex.util.pars;
 
 import java.util.Set;
 
+import static net.skds.physex.PhysEX.LOGGER;
+
 import net.minecraft.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.skds.physex.util.Interface.IBlockExtended;
@@ -27,16 +29,28 @@ public class ParsApplier {
 		JsonConfigReader reader = new JsonConfigReader();
 		reader.run();
 
+		long t0 = System.currentTimeMillis();
+		LOGGER.info("Cleaning blocks...");
+
 		ForgeRegistries.BLOCKS.getValues().forEach(block -> {
 			((IBlockExtended) block).setCustomBlockPars(new CustomBlockPars());
 		});
 
+		LOGGER.info("Reading fluid configs...");
+
 		reader.FP.forEach((name, pars) -> {
 			applyFluidPars(pars);
 		});
+
+		LOGGER.info("Reading blockphysics configs...");
+
 		reader.BFP.forEach((name, pars) -> {
 			applyBlockPhysicsPars(pars);
 		});
+
+		LOGGER.info("Configs reloaded in " + (System.currentTimeMillis() - t0) + "ms");
+
+		//System.out.println(reader.BFP);
 	}
 
 	public static class ParsGroup<A> {

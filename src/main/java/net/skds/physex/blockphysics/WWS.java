@@ -14,6 +14,7 @@ public class WWS {
 	private final ServerWorld world;
 	private final BFWorker worker;	
 	private ConcurrentSet<BFTask> tasks = new ConcurrentSet<>();
+	private ConcurrentSet<BFTask> NTT = new ConcurrentSet<>();
 
 
 	public WWS(ServerWorld w, WWSGlobal owner) {
@@ -22,9 +23,17 @@ public class WWS {
 		this.worker = new BFWorker(this);
 	}
 
+	public void addTask(BFTask task) {
+		tasks.add(task);
+	}
+
 	public void addTask(BlockPos pos, BFTask.Type type) {
 		BFTask task = new BFTask(type, pos);
 		tasks.add(task);
+	}
+
+	public void goNT(BFTask task) {
+		NTT.add(task);
 	}
 
 	public ServerWorld getWorld() {
@@ -50,6 +59,8 @@ public class WWS {
 	}
 
 	public void tickOut() {
+		tasks.addAll(NTT);
+		NTT = new ConcurrentSet<>();
 		unpark();		
 	}
 }

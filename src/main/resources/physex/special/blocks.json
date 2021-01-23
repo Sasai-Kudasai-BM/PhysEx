@@ -1,0 +1,111 @@
+{
+	"Properties": {
+		"Planks": {
+			"mass": 500.0,
+			"strength": 10.0,
+			"bounce": 0.2,
+			"radial": 4,
+			"linear": 6,
+			"arc": 0,
+			"falling": true,
+			"celling": true,
+			"fragile": false,
+			"slide": false,
+			"hanging": true,
+			"attach": true,
+			"attachIgnore": [],
+			"blocks": ["planks"]
+		},
+		"leaves": {
+			"mass": 100.0,
+			"strength": 1.0,
+			"bounce": 0.2,
+			"radial": 6,
+			"linear": 5,
+			"arc": 0,
+			"falling": true,
+			"celling": true,
+			"fragile": false,
+			"slide": false,
+			"hanging": true,
+			"attach": false,
+			"attachIgnore": ["logs"],
+			"blocks": ["leaves"]
+		},
+		"cb": {
+			"mass": 3000.0,
+			"strength": 100.0,
+			"bounce": 0.2,
+			"radial": 0,
+			"linear": 0,
+			"arc": 1,
+			"falling": true,
+			"celling": false,
+			"fragile": false,
+			"slide": false,
+			"hanging": false,
+			"attach": false,
+			"attachIgnore": [],
+			"blocks": ["cobblestone"]
+		},
+		"stone": {
+			"mass": 3000.0,
+			"strength": 500.0,
+			"bounce": 0.2,
+			"radial": 0,
+			"linear": 1,
+			"arc": 2,
+			"falling": true,
+			"celling": false,
+			"fragile": false,
+			"slide": false,
+			"hanging": false,
+			"attach": false,
+			"attachIgnore": [],
+			"blocks": ["stone"]
+		},
+		"dirt": {
+			"mass": 2000.0,
+			"strength": 10.0,
+			"bounce": 0.2,
+			"radial": 0,
+			"linear": 0,
+			"arc": 0,
+			"falling": true,
+			"celling": false,
+			"fragile": false,
+			"slide": true,
+			"hanging": false,
+			"attach": false,
+			"attachIgnore": [],
+			"blocks": ["dirt"]
+		}
+	},
+	"BlockLists": {
+		"stone": [
+			"#forge:stone",
+			"#forge:ores"
+		],
+		"cobblestone": [
+			"minecraft:cobblestone"
+		],
+		"dirt": [
+			"#forge:dirt"
+		],
+		"planks": [
+			"minecraft:oak_planks"
+		],
+		"glass": [
+			"minecraft:glass"
+		],
+		"wool": [
+			"#minecraft:wool"
+		],
+		"leaves": [
+			"#minecraft:leaves"
+		],
+		"logs": [
+			"#minecraft:logs"
+		]
+	}
+}

@@ -14,6 +14,7 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.skds.physex.client.ClientEvents;
+import net.skds.physex.network.PacketHandler;
 import net.skds.physex.registry.Entities;
 import net.skds.physex.registry.Items;
 import net.skds.physex.registry.RenderRegistry;
@@ -44,13 +45,12 @@ public class PhysEX
         
         Items.register();
         Entities.register();
+
+        PacketHandler.init();
     }
     
 
-    private void setup(final FMLCommonSetupEvent event) {  
-        //CapabilityManager.INSTANCE.register(ChunkData.class, new ChunkDataStorage(), () -> {
-		//	return new ChunkData();
-        //});
+    private void setup(final FMLCommonSetupEvent event) {
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {

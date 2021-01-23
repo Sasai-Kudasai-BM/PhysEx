@@ -135,21 +135,15 @@ public class BlockUpdataer {
         });
     }
 
-    public static void addUpdate(ServerWorld w, BlockPos pos, BlockState newState, BlockState oldState, int flags) {
+    public static void addUpdate(ServerWorld w, BlockPos pos, BlockState newState, BlockState oldState, int flags, boolean forceDrop) {
         if (newState == oldState) {
             return;
-            // System.out.println(newState);
         }
         ConcurrentLinkedQueue<UpdateTask> bul = BLOCK_UPDATES_WORLDS.get(w);
         if (bul == null) {
             return;
         }
-        /*
-         * long lp = pos.toLong(); UpdateTask ot = bul.get(lp); if (ot != null) {
-         * ot.newState(newState); } else { bul.put(lp, new UpdateTask(pos, newState,
-         * oldState, flags)); }
-         */
-        bul.add(new UpdateTask(pos, newState, oldState, flags));
+        bul.add(new UpdateTask(pos, newState, oldState, flags, forceDrop));
     }
 
     private static int inint = 0;
@@ -164,6 +158,10 @@ public class BlockUpdataer {
                 e.world.addEntity(e);
             }
             BLOCK_UPDATES_WORLDS.forEach((w, set) -> {
+                //w.getPlayers().forEach((p) -> {
+                //    PacketHandler.send(PacketDistributor.PLAYER.with(() -> p), new BlocksUpdatePacket(set));
+                //});
+
                 while (!set.isEmpty()) {
                     UpdateTask task = set.poll();
                     task.update(w);

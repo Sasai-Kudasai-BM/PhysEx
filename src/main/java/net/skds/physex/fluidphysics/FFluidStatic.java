@@ -564,7 +564,7 @@ public class FFluidStatic {
 			// System.out.println("l;hhhhhhh " + bh);
 		}
 		Fluid f = bh.getFluidInTank(0).getFluid();
-		if (!(f instanceof FlowingFluid)) {
+		if (!(f instanceof FlowingFluid) && f != Fluids.EMPTY) {
 			return;
 		}
 		PlayerEntity p = e.getPlayer();
